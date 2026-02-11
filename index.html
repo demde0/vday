@@ -337,7 +337,7 @@
 
         .photo-frame {
             width: 100%;
-            height: 250px;
+            height: 500px;
             background: #f0f0f0;
             margin-bottom: 15px;
             overflow: hidden;
@@ -345,6 +345,14 @@
             justify-content: center;
             align-items: center;
             position: relative;
+        }
+
+        /* Make images fit within the frame showing the whole photo */
+        .photo-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain; /* Changed from cover to contain - shows entire photo */
+            object-position: center;
         }
 
         .photo-frame i {
@@ -650,7 +658,7 @@
                 <div class="polaroid">
                     <div class="tape tape-left"></div>
                     <div class="photo-frame">
-                        <i class="fas fa-heart"></i>
+                        <img src="src/Screenshot 2026-02-11 104700.png">
                     </div>
                     <div class="photo-caption">Our First Date ❤️</div>
                 </div>
@@ -659,7 +667,7 @@
                 <div class="polaroid">
                     <div class="tape tape-right"></div>
                     <div class="photo-frame">
-                        <i class="fas fa-star"></i>
+                        <img src="src/Screenshot 2026-02-11 104700.png">
                     </div>
                     <div class="photo-caption">That Special Moment ✨</div>
                 </div>
@@ -668,7 +676,7 @@
                 <div class="polaroid">
                     <div class="tape tape-left"></div>
                     <div class="photo-frame">
-                        <i class="fas fa-smile"></i>
+                        <img src="src/Screenshot 2026-02-11 104700.png">
                     </div>
                     <div class="photo-caption">Your Beautiful Smile 😊</div>
                 </div>
@@ -677,7 +685,7 @@
                 <div class="polaroid">
                     <div class="tape tape-right"></div>
                     <div class="photo-frame">
-                        <i class="fas fa-sun"></i>
+                        <img src="src/Screenshot 2026-02-11 104700.png">
                     </div>
                     <div class="photo-caption">Sunny Days Together ☀️</div>
                 </div>
@@ -686,7 +694,7 @@
                 <div class="polaroid">
                     <div class="tape tape-left"></div>
                     <div class="photo-frame">
-                        <i class="fas fa-moon"></i>
+                        <img src="src/Screenshot 2026-02-11 104700.png">
                     </div>
                     <div class="photo-caption">Moonlit Nights 🌙</div>
                 </div>
@@ -695,7 +703,7 @@
                 <div class="polaroid">
                     <div class="tape tape-right"></div>
                     <div class="photo-frame">
-                        <i class="fas fa-infinity"></i>
+                        <img src="src/Screenshot 2026-02-11 104700.png">
                     </div>
                     <div class="photo-caption">Forever & Always ∞</div>
                 </div>
@@ -726,14 +734,13 @@
         </button>
     </div>
 
-    <!-- Audio - Sabrina Claudio "All To You" -->
-    <!-- Using iframe for YouTube embed (hidden) -->
-    <iframe 
-        id="bgMusic" 
-        style="display: none;" 
-        src="https://www.youtube.com/embed/Tlu-_31CWfY?si=Ok6Q6g1hKWbyVpNG"
-        allow="autoplay; encrypted-media">
-    </iframe>
+    <!-- Audio - Background Music -->
+    <audio id="bgMusic" loop>
+        <!-- Using a royalty-free romantic track that works reliably -->
+        <!-- You can replace this URL with any MP3 link you prefer -->
+        <source src="music/Sabrina Claudio - All To You.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
 
     <script>
         // Create floating hearts
@@ -800,56 +807,42 @@
 
                 // Auto-play music when gift opens
                 setTimeout(() => {
-                    if (player && player.playVideo) {
-                        player.playVideo();
-                    }
+                    bgMusic.play().catch(e => {
+                        console.log('Autoplay prevented - user can click music button');
+                    });
                 }, 500);
             }
         });
 
-        // Music controls - YouTube API
-        let player;
+        // Music controls - Simple HTML5 Audio
+        const musicButton = document.getElementById('musicButton');
+        const bgMusic = document.getElementById('bgMusic');
         let isPlaying = false;
         
-        // Load YouTube API
-        var tag = document.createElement('script');
-        tag.src = "https://www.youtube.com/iframe_api";
-        var firstScriptTag = document.getElementsByTagName('script')[0];
-        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-        
-        function onYouTubeIframeAPIReady() {
-            player = new YT.Player('bgMusic', {
-                events: {
-                    'onReady': onPlayerReady,
-                    'onStateChange': onPlayerStateChange
-                }
-            });
-        }
-        
-        function onPlayerReady(event) {
-            // Player is ready
-        }
-        
-        function onPlayerStateChange(event) {
-            const button = document.getElementById('musicButton');
-            if (event.data == YT.PlayerState.PLAYING) {
-                button.classList.add('playing');
-                isPlaying = true;
-            } else {
-                button.classList.remove('playing');
-                isPlaying = false;
-            }
-        }
-        
         function toggleMusic() {
-            if (!player) return;
-            
             if (isPlaying) {
-                player.pauseVideo();
+                bgMusic.pause();
+                musicButton.classList.remove('playing');
+                isPlaying = false;
             } else {
-                player.playVideo();
+                bgMusic.play().catch(e => {
+                    console.log('Autoplay blocked, user interaction required');
+                });
+                musicButton.classList.add('playing');
+                isPlaying = true;
             }
         }
+        
+        // Update button state when music plays/pauses
+        bgMusic.addEventListener('play', () => {
+            musicButton.classList.add('playing');
+            isPlaying = true;
+        });
+        
+        bgMusic.addEventListener('pause', () => {
+            musicButton.classList.remove('playing');
+            isPlaying = false;
+        });
 
         // Countdown timer (counting up from a special date)
         function startCountdown() {
